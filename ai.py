@@ -62,8 +62,8 @@ if game.register(username = 'cheese', \
 
 
 		for cell in game.me.cells.values():
-			# cmd_list.append(game.attack(cell.position, 1))
-			# me.energy -= 1
+			cmd_list.append(game.attack(cell.position, 1))
+			me.energy -= 1
 			# my_attack_list.append(cell.position)
 
 			# if me.gold > 1000 * homeCell.building.level and me.energy > 1000 * homeCell.building.level:
@@ -122,7 +122,7 @@ if game.register(username = 'cheese', \
 				else:
 					if cell.gold > 5:
 						building = BLD_GOLD_MINE
-						val = 2 * cell.building.gold
+						val = 2 * cell.gold
 					else:
 						building = BLD_FORTRESS
 						sum = 0
