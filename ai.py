@@ -19,7 +19,7 @@ game = Colorfight()
 
 # Connect to the server. This will connect to the public room. If you want to
 # join other rooms, you need to change the argument
-game.connect(room = 'smallpublic')
+game.connect(room = 'test-run2')
 
 # game.register should return True if succeed.
 # As no duplicate usernames are allowed, a random integer string is appended
