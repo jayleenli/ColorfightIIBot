@@ -1,0 +1,33 @@
+				elif game.turn < 150:
+					if cell.energy > 5:
+						building = BLD_ENERGY_WELL
+						val = cell.energy
+					else:
+						building = BLD_FORTRESS
+						sum = 0
+						for p in cell.position.get_surrounding_cardinals():
+							sum += game.game_map[p].energy + game.game_map[p].gold
+						val = sum / 8
+				else:
+                    notmine= 0
+                    for checkcellpos in cell.get_surrounding_cardinals():
+                        checkcell= game.game_map[checkcellpos]
+                        if checkcell.owner != game.uid:
+                            notmine+= 1
+                    if notmine>1:
+						building = BLD_FORTRESS
+						sum = 0
+						for p in cell.position.get_surrounding_cardinals():
+							sum += game.game_map[p].energy + game.game_map[p].gold
+						val = sum / 8
+					if cell.gold > 5:
+						building = BLD_GOLD_MINE
+						val = 2 * cell.gold
+					else:
+						building = BLD_FORTRESS
+						sum = 0
+						for p in cell.position.get_surrounding_cardinals():
+							sum += game.game_map[p].energy + game.game_map[p].gold
+						val = sum / 8
+
+				buildingList[cell] = val
