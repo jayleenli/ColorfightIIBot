@@ -9,7 +9,7 @@ game = Colorfight()
 
 # Connect to the server. This will connect to the public room. If you want to
 # join other rooms, you need to change the argument
-game.connect(room = 'smallpublic')
+game.connect(room = 'upgrade')
 
 # game.register should return True if succeed.
 # As no duplicate usernames are allowed, a random integer string is appended
@@ -18,7 +18,7 @@ game.connect(room = 'smallpublic')
 # You need to set a password. For the example AI, the current time is used
 # as the password. You should change it to something that will not change 
 # between runs so you can continue the game if disconnected.
-if game.register(username = 'cheese2', \
+if game.register(username = 'cheese', \
 		password = str(int(time.time()))):
 	# This is the game loop
 	while True:
@@ -56,6 +56,7 @@ if game.register(username = 'cheese2', \
 			if (count >= 1):
 				outercells.append(i)
 
+
 		for cell in outercells:
 		#cell = random.choice(outercells)
 			# Check the surrounding position
@@ -84,7 +85,7 @@ if game.register(username = 'cheese2', \
 			# is not mine, and I have not attacked it in this round already
 			# We also try to keep our cell number under 100 to avoid tax
 			if c.attack_cost < me.energy and c.owner != game.uid \
-					and c.position not in my_attack_list and len(me.cells) < 99:
+					and c.position not in my_attack_list and len(me.cells) < 50:
 				# Add the attack command in the command list
 				# Subtract the attack cost manually so I can keep track
 				# of the energy I have.
@@ -94,7 +95,7 @@ if game.register(username = 'cheese2', \
 				print("We are attacking ({}, {}) with {} energy".format(pos.x, pos.y, c.attack_cost))
 				game.me.energy -= c.attack_cost
 				my_attack_list.append(c.position)
-			if (len(me.cells) >= 98 and me.tech_level == 3 and c.owner != game.uid and c.position not in my_attack_list):
+			if (len(me.cells) >= 49 and c.owner != game.uid and c.position not in my_attack_list):
 				cmd_list.append(game.attack(pos, c.attack_cost))
 				print("We are attacking ({}, {}) with {} energy".format(pos.x, pos.y, c.attack_cost))
 				game.me.energy -= c.attack_cost
@@ -103,29 +104,22 @@ if game.register(username = 'cheese2', \
 			# If we can upgrade the building, upgrade it.
 			# Notice can_update only checks for upper bound. You need to check
 			# tech_level by yourself. 
-			if cell.building.can_upgrade and \
-					(cell.building.is_home or cell.building.level < me.tech_level) and \
-					cell.building.upgrade_gold < me.gold and \
-					cell.building.upgrade_energy < me.energy:
-				cmd_list.append(game.upgrade(cell.position))
-				print("We upgraded ({}, {})".format(cell.position.x, cell.position.y))
-				me.gold   -= cell.building.upgrade_gold
-				me.energy -= cell.building.upgrade_energy
+			
 				
 			# Build a random building if we have enough gold
 			if cell.owner == me.uid and cell.building.is_empty and me.gold >= 100:
-				if (len(me.cells) >= 98):
+				if (len(me.cells) >= 50):
 					# just build fortress
 					building = BLD_FORTRESS
 					cmd_list.append(game.build(cell.position, building))
 					print("We build FORTRESS {} on ({}, {})".format(building, cell.position.x, cell.position.y))
 					me.gold -= 100
-				elif ((cell.natural_energy+2 >= cell.natural_gold)):
+				elif ((cell.natural_energy+2 >= cell.natural_gold) and len(me.cells) <= 50):
 						building = BLD_ENERGY_WELL
 						cmd_list.append(game.build(cell.position, building))
 						print("We build COOL ENERGY ON BIG ENERGY {} on ({}, {})".format(building, cell.position.x, cell.position.y))
 						me.gold -= 100
-				elif ((cell.natural_gold >= cell.natural_energy)):
+				elif ((cell.natural_gold >= cell.natural_energy) and len(me.cells) <= 50):
 					building = BLD_GOLD_MINE
 					cmd_list.append(game.build(cell.position, building))
 					print("We build BIG GOLD ON BIG GOLD {} on ({}, {})".format(building, cell.position.x, cell.position.y))
@@ -142,7 +136,15 @@ if game.register(username = 'cheese2', \
 							print("We build COOL FORTRESS CUZ EVERYTHING SURROUNDING NEED PROTECTION{} on ({}, {})".format(building, cell.position.x, cell.position.y))
 							me.gold -= 100
 
-		
+		for cell in game.me.cells.values(): 
+			if cell.building.can_upgrade and \
+					(cell.building.is_home or cell.building.level < me.tech_level) and \
+					cell.building.upgrade_gold < me.gold and \
+					cell.building.upgrade_energy < me.energy:
+				cmd_list.append(game.upgrade(cell.position))
+				print("We upgraded ({}, {})".format(cell.position.x, cell.position.y))
+				me.gold   -= cell.building.upgrade_gold
+				me.energy -= cell.building.upgrade_energy
 		# Send the command list to the server
 		result = game.send_cmd(cmd_list)
 		print(result)
