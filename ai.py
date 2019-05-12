@@ -28,7 +28,7 @@ game.connect(room = 'smallpublic')
 # You need to set a password. For the example AI, the current time is used
 # as the password. You should change it to something that will not change 
 # between runs so you can continue the game if disconnected.
-if game.register(username = '200IQ', \
+if game.register(username = 'cheese', \
 		password = 'hello'):
 	# This is the game loop
 	while True:
